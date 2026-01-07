@@ -12,7 +12,24 @@ venv/
 env/
 ENV/
 .venv/
+**/.venv/
+**/venv/
+**/env/
 
 # Environment variables
 .env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Django
+*.log
+local_settings.py
 
