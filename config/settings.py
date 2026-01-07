@@ -158,7 +158,6 @@ CORS_ALLOW_CREDENTIALS = True
 # These are loaded from environment variables, which are populated from .env file
 SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
 SUPABASE_JWT_SECRET = os.environ.get('SUPABASE_JWT_SECRET', '')
-SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', '')
 
 # Validate required Supabase settings
 if not SUPABASE_URL:
