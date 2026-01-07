@@ -1,6 +1,5 @@
 import jwt
-import requests
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 from django.conf import settings
 
 
@@ -36,7 +35,7 @@ class SupabaseJWTValidator:
             return None
     
     
-    def validate_token(self, token: str) -> Optional[Dict]:
+    def validate_token(self, token: str) -> Optional[Dict[str, Any]]:
         """
         Validate a Supabase JWT token.
         Supports ES256/RS256 (OAuth tokens) and HS256 (standard tokens).
