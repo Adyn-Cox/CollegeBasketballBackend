@@ -155,6 +155,7 @@ def refresh_token_view(request):
             json={'refresh_token': refresh_token},
             headers={
                 'Content-Type': 'application/json',
+                'apikey': getattr(settings, 'SUPABASE_ANON_KEY', ''),
             },
             timeout=10
         )

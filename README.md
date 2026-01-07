@@ -42,11 +42,13 @@ Create a `.env` file in the project root with the following variables:
 DATABASE_URL=postgresql://user:password@localhost:5432/dbname
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_JWT_SECRET=your-jwt-secret
+SUPABASE_ANON_KEY=your-anon-key
 ```
 
 **Where to find Supabase values:**
 - `SUPABASE_URL`: Your Supabase project URL
 - `SUPABASE_JWT_SECRET`: Supabase Dashboard → Settings → API → JWT Secret
+- `SUPABASE_ANON_KEY`: Supabase Dashboard → Settings → API → anon/public key
 
 ### 4. Database Migrations
 
