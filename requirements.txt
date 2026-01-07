@@ -14,4 +14,5 @@ pytest-django>=4.0.0
 mypy>=1.0.0
 ruff>=0.1.0
 django-stubs>=5.0.0
-types-requests>=2.0.0
+# Note: types-requests removed due to conflict with urllib3<2.0 requirement
+# mypy will use ignore_missing_imports=True for requests library
