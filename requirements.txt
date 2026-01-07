@@ -9,10 +9,10 @@ python-dotenv==1.0.0
 urllib3<2.0
 
 # Development and CI tools
-pytest>=8.0.0
-pytest-django>=4.0.0
-mypy>=1.0.0
-ruff>=0.1.0
-django-stubs>=5.0.0
+pytest==8.3.3
+pytest-django==4.8.0
+mypy==1.11.2
+ruff==0.6.9
+django-stubs==5.1.0
 # Note: types-requests removed due to conflict with urllib3<2.0 requirement
-# mypy will use ignore_missing_imports=True for requests library
+# mypy will use ignore_missing_imports=True for requests library (configured in mypy.ini)
