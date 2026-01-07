@@ -18,6 +18,6 @@ elif [ -d ".venv" ]; then
     source .venv/bin/activate
 fi
 
-python manage.py runserver 5000
+python manage.py runserver 5001
 
  

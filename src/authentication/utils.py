@@ -1,5 +1,5 @@
 import jwt
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 from django.conf import settings
 
 
@@ -27,7 +27,7 @@ class SupabaseJWTValidator:
         
         self.jwt_secret = supabase_jwt_secret
     
-    def validate_token(self, token: str) -> Optional[Dict]:
+    def validate_token(self, token: str) -> Optional[Dict[str, Any]]:
         """
         Validate a Supabase JWT token using HS256 algorithm.
         
@@ -52,7 +52,7 @@ class SupabaseJWTValidator:
                     "verify_iat": True,
                 }
             )
-            return decoded
+            return decoded  # type: ignore[no-any-return]
             
         except jwt.ExpiredSignatureError:
             return None
