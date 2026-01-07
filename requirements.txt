@@ -14,6 +14,6 @@ pytest-django==4.8.0
 mypy==1.11.2
 ruff==0.6.9
 django-stubs==5.1.0
-djangorestframework-stubs==3.14.7
+djangorestframework-stubs==3.14.5
 # Note: types-requests removed due to conflict with urllib3<2.0 requirement
 # mypy will use ignore_missing_imports=True for requests library (configured in mypy.ini)
