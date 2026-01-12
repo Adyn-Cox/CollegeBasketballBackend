@@ -1,0 +1,98 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Type check
+        run: mypy config/ authentication/ --exclude '.*migrations.*'
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test with coverage
+        run: |
+          pytest --cov=. --cov-branch --cov-report=term-missing --cov-report=json
+
+      - name: Check coverage thresholds
+        run: |
+          python3 << 'EOF'
+          import json
+          import sys
+          
+          with open('coverage.json', 'r') as f:
+              data = json.load(f)
+          
+          totals = data['totals']
+          line_pct = totals['percent_covered']
+          branch_pct = totals.get('percent_covered_branches', 100.0)
+          
+          # In coverage.py, statement coverage is the same as line coverage in Python
+          statement_pct = line_pct
+          
+          # Note: coverage.py doesn't provide function coverage separately in totals.
+          # Function coverage in Python is effectively the same as line coverage since
+          # function definitions are lines. For the 100% function threshold, we use
+          # line coverage as the metric.
+          function_pct = line_pct
+          
+          # Thresholds
+          line_threshold = 96.0
+          statement_threshold = 96.0
+          function_threshold = 100.0
+          branch_threshold = 80.0
+          
+          failed = False
+          
+          # Check line coverage (96%)
+          if line_pct < line_threshold:
+              print(f'❌ Line coverage {line_pct:.2f}% is below threshold of {line_threshold}%')
+              failed = True
+          else:
+              print(f'✅ Line coverage {line_pct:.2f}% meets threshold of {line_threshold}%')
+          
+          # Check statement coverage (96%) - same as line in Python
+          if statement_pct < statement_threshold:
+              print(f'❌ Statement coverage {statement_pct:.2f}% is below threshold of {statement_threshold}%')
+              failed = True
+          else:
+              print(f'✅ Statement coverage {statement_pct:.2f}% meets threshold of {statement_threshold}%')
+          
+          # Check function coverage (100%)
+          # Note: In Python with coverage.py, function coverage uses line coverage as the metric
+          if function_pct < function_threshold:
+              print(f'❌ Function coverage {function_pct:.2f}% is below threshold of {function_threshold}%')
+              failed = True
+          else:
+              print(f'✅ Function coverage {function_pct:.2f}% meets threshold of {function_threshold}%')
+          
+          # Check branch coverage (80%)
+          if branch_pct < branch_threshold:
+              print(f'❌ Branch coverage {branch_pct:.2f}% is below threshold of {branch_threshold}%')
+              failed = True
+          else:
+              print(f'✅ Branch coverage {branch_pct:.2f}% meets threshold of {branch_threshold}%')
+          
+          if failed:
+              sys.exit(1)
+          EOF
+
+      - name: Check Django configuration
+        run: python manage.py check

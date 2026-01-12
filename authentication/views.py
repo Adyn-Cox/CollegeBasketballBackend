@@ -8,7 +8,6 @@ from authentication.models import SupabaseUser
 from authentication.serializers import (
     LoginSerializer,
     LoginResponseSerializer,
-    LogoutSerializer,
     RefreshTokenSerializer,
     RefreshTokenResponseSerializer,
 )
@@ -181,7 +180,7 @@ def refresh_token_view(request):
         
         return Response(response_serializer.data, status=status.HTTP_200_OK)
         
-    except requests.RequestException as e:
+    except requests.RequestException:
         return Response(
             {'error': 'Failed to communicate with Supabase'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
