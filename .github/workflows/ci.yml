@@ -8,6 +8,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      # Use in-memory SQLite - no files, no database service needed!
+      DATABASE_URL: sqlite:///:memory:
+      SUPABASE_URL: https://test.supabase.co
+      SUPABASE_JWT_SECRET: test-jwt-secret-key-for-testing-only
+      SUPABASE_ANON_KEY: test-anon-key
+      DJANGO_SETTINGS_MODULE: config.settings
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,9 +35,15 @@ jobs:
       - name: Lint
         run: ruff check .
 
-      - name: Test with coverage
+      - name: Run tests
         run: |
-          pytest --cov=. --cov-branch --cov-report=term-missing --cov-report=json
+          pytest \
+            --cov=authentication \
+            --cov=config \
+            --cov-branch \
+            --cov-report=term-missing \
+            --cov-report=json \
+            -v
 
       - name: Check coverage thresholds
         run: |
@@ -44,16 +58,9 @@ jobs:
           line_pct = totals['percent_covered']
           branch_pct = totals.get('percent_covered_branches', 100.0)
           
-          # In coverage.py, statement coverage is the same as line coverage in Python
           statement_pct = line_pct
-          
-          # Note: coverage.py doesn't provide function coverage separately in totals.
-          # Function coverage in Python is effectively the same as line coverage since
-          # function definitions are lines. For the 100% function threshold, we use
-          # line coverage as the metric.
           function_pct = line_pct
           
-          # Thresholds
           line_threshold = 96.0
           statement_threshold = 96.0
           function_threshold = 100.0
@@ -61,29 +68,24 @@ jobs:
           
           failed = False
           
-          # Check line coverage (96%)
           if line_pct < line_threshold:
               print(f'❌ Line coverage {line_pct:.2f}% is below threshold of {line_threshold}%')
               failed = True
           else:
               print(f'✅ Line coverage {line_pct:.2f}% meets threshold of {line_threshold}%')
           
-          # Check statement coverage (96%) - same as line in Python
           if statement_pct < statement_threshold:
               print(f'❌ Statement coverage {statement_pct:.2f}% is below threshold of {statement_threshold}%')
               failed = True
           else:
               print(f'✅ Statement coverage {statement_pct:.2f}% meets threshold of {statement_threshold}%')
           
-          # Check function coverage (100%)
-          # Note: In Python with coverage.py, function coverage uses line coverage as the metric
           if function_pct < function_threshold:
               print(f'❌ Function coverage {function_pct:.2f}% is below threshold of {function_threshold}%')
               failed = True
           else:
               print(f'✅ Function coverage {function_pct:.2f}% meets threshold of {function_threshold}%')
           
-          # Check branch coverage (80%)
           if branch_pct < branch_threshold:
               print(f'❌ Branch coverage {branch_pct:.2f}% is below threshold of {branch_threshold}%')
               failed = True

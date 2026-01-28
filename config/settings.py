@@ -83,29 +83,41 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# PostgreSQL configuration using DATABASE_URL from .env file
+# Database configuration using DATABASE_URL from .env file
+# Supports both PostgreSQL and SQLite (for testing)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if not DATABASE_URL:
     raise ValueError(
         "DATABASE_URL environment variable is required. "
         "Please set it in your .env file. "
-        "Format: postgresql://user:password@host:port/dbname"
+        "Format: postgresql://user:password@host:port/dbname or sqlite:///path/to/db.sqlite3"
     )
 
-# Parse the DATABASE_URL (format: postgresql://user:password@host:port/dbname)
+# Parse the DATABASE_URL
 parsed = urlparse(DATABASE_URL)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': parsed.path[1:],  # Remove leading '/'
-        'USER': parsed.username,
-        'PASSWORD': parsed.password,
-        'HOST': parsed.hostname,
-        'PORT': parsed.port or '5432',
+# Support both PostgreSQL and SQLite
+if parsed.scheme == 'sqlite':
+    # SQLite database (used for testing)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': parsed.path if parsed.path else ':memory:',
+        }
     }
-}
+else:
+    # PostgreSQL database (production)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': parsed.path[1:],  # Remove leading '/'
+            'USER': parsed.username,
+            'PASSWORD': parsed.password,
+            'HOST': parsed.hostname,
+            'PORT': parsed.port or '5432',
+        }
+    }
 
 
 # Internationalization

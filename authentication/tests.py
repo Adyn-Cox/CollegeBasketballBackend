@@ -319,3 +319,121 @@ class TestRefreshTokenView:
         
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert 'error' in response.data
+
+    @patch('authentication.views.requests.post')
+    @patch('authentication.views.settings')
+    def test_refresh_token_supabase_url_missing(self, mock_settings, mock_post, api_client, supabase_user):
+        """Test refresh token when SUPABASE_URL is not configured."""
+        mock_settings.SUPABASE_URL = None
+        
+        url = reverse('authentication:refresh')
+        data = {'refresh_token': supabase_user.refresh_token}
+        
+        response = api_client.post(url, data, format='json')
+        
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert 'error' in response.data
+        assert 'Supabase configuration error' in response.data['error']
+
+    @patch('authentication.views.requests.post')
+    def test_refresh_token_supabase_api_failure(self, mock_post, api_client, supabase_user):
+        """Test refresh token when Supabase API returns non-200 status."""
+        mock_response = MagicMock()
+        mock_response.status_code = 401
+        mock_post.return_value = mock_response
+        
+        url = reverse('authentication:refresh')
+        data = {'refresh_token': supabase_user.refresh_token}
+        
+        response = api_client.post(url, data, format='json')
+        
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert 'error' in response.data
+        assert 'Failed to refresh token with Supabase' in response.data['error']
+
+    @patch('authentication.views.requests.post')
+    def test_refresh_token_request_exception(self, mock_post, api_client, supabase_user):
+        """Test refresh token when requests raises an exception."""
+        import requests
+        mock_post.side_effect = requests.RequestException("Connection error")
+        
+        url = reverse('authentication:refresh')
+        data = {'refresh_token': supabase_user.refresh_token}
+        
+        response = api_client.post(url, data, format='json')
+        
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert 'error' in response.data
+        assert 'Failed to communicate with Supabase' in response.data['error']
+
+    @patch('authentication.views.requests.post')
+    def test_refresh_token_no_new_refresh_token_in_response(self, mock_post, api_client, supabase_user, jwt_secret):
+        """Test refresh token when Supabase doesn't return new refresh_token."""
+        old_refresh_token = supabase_user.refresh_token
+        new_access_token = jwt.encode(
+            {'sub': str(supabase_user.supabase_user_id), 'exp': datetime.utcnow() + timedelta(hours=1)},
+            jwt_secret,
+            algorithm='HS256'
+        )
+        
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'access_token': new_access_token,
+            # No refresh_token in response - should fallback to old one
+        }
+        mock_post.return_value = mock_response
+        
+        url = reverse('authentication:refresh')
+        data = {'refresh_token': old_refresh_token}
+        
+        response = api_client.post(url, data, format='json')
+        
+        assert response.status_code == status.HTTP_200_OK
+        assert 'access_token' in response.data
+        assert 'refresh_token' in response.data
+        # Should fallback to old refresh token
+        assert response.data['refresh_token'] == old_refresh_token
+
+    @patch('authentication.views.get_jwt_validator')
+    def test_login_user_id_missing(self, mock_validator, api_client, valid_access_token, sample_refresh_token):
+        """Test login when user_id cannot be extracted from token."""
+        validator_mock = MagicMock()
+        validator_mock.validate_token.return_value = {'email': 'test@example.com'}  # No 'sub' or 'user_id'
+        validator_mock.extract_user_id.return_value = None
+        mock_validator.return_value = validator_mock
+        
+        url = reverse('authentication:login')
+        data = {
+            'access_token': valid_access_token,
+            'refresh_token': sample_refresh_token,
+        }
+        
+        response = api_client.post(url, data, format='json')
+        
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert 'error' in response.data
+        assert 'Invalid token payload' in response.data['error']
+
+    @patch('authentication.views.get_jwt_validator')
+    def test_login_email_from_user_metadata(self, mock_validator, api_client, valid_access_token, sample_refresh_token, sample_user_id):
+        """Test login when email is in user_metadata."""
+        validator_mock = MagicMock()
+        validator_mock.validate_token.return_value = {
+            'sub': sample_user_id,
+            'user_metadata': {'email': 'metadata@example.com'}
+        }
+        validator_mock.extract_user_id.return_value = sample_user_id
+        mock_validator.return_value = validator_mock
+        
+        url = reverse('authentication:login')
+        data = {
+            'access_token': valid_access_token,
+            'refresh_token': sample_refresh_token,
+        }
+        
+        response = api_client.post(url, data, format='json')
+        
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['user']['email'] == 'metadata@example.com'
+
