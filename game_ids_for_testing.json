@@ -1,0 +1,117 @@
+{
+  "date": "2026/01/29",
+  "game_ids": [
+    "6504652",
+    "6503386",
+    "6506303",
+    "6504520",
+    "6505513",
+    "6501137",
+    "6501542",
+    "6501852",
+    "6502197",
+    "6502318"
+  ],
+  "games": [
+    {
+      "gameID": "6504652",
+      "away": "Samford",
+      "home": "Furman"
+    },
+    {
+      "gameID": "6503386",
+      "away": "Bryant",
+      "home": "Binghamton"
+    },
+    {
+      "gameID": "6506303",
+      "away": "UMass Lowell",
+      "home": "New Hampshire"
+    },
+    {
+      "gameID": "6504520",
+      "away": "NJIT",
+      "home": "UAlbany"
+    },
+    {
+      "gameID": "6505513",
+      "away": "Gardner-Webb",
+      "home": "UNC Asheville"
+    },
+    {
+      "gameID": "6501137",
+      "away": "Lipscomb",
+      "home": "Jacksonville"
+    },
+    {
+      "gameID": "6501542",
+      "away": "Stony Brook",
+      "home": "Campbell"
+    },
+    {
+      "gameID": "6501852",
+      "away": "New Haven",
+      "home": "Mercyhurst"
+    },
+    {
+      "gameID": "6502197",
+      "away": "North Ala.",
+      "home": "FGCU"
+    },
+    {
+      "gameID": "6502318",
+      "away": "Liberty",
+      "home": "Middle Tenn."
+    },
+    {
+      "gameID": "6502480",
+      "away": "Wofford",
+      "home": "Chattanooga"
+    },
+    {
+      "gameID": "6502486",
+      "away": "Stetson",
+      "home": "North Florida"
+    },
+    {
+      "gameID": "6502893",
+      "away": "Col. of Charleston",
+      "home": "Hofstra"
+    },
+    {
+      "gameID": "6503045",
+      "away": "Western Caro.",
+      "home": "ETSU"
+    },
+    {
+      "gameID": "6503446",
+      "away": "James Madison",
+      "home": "Troy"
+    },
+    {
+      "gameID": "6503589",
+      "away": "Hampton",
+      "home": "Drexel"
+    },
+    {
+      "gameID": "6503781",
+      "away": "VMI",
+      "home": "The Citadel"
+    },
+    {
+      "gameID": "6504241",
+      "away": "UMBC",
+      "home": "Vermont"
+    },
+    {
+      "gameID": "6504400",
+      "away": "Colorado",
+      "home": "Iowa St."
+    },
+    {
+      "gameID": "6504463",
+      "away": "Radford",
+      "home": "Charleston So."
+    }
+  ]
+}

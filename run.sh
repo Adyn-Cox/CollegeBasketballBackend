@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to run Django server on port 5000
+# Script to run FastAPI server on port 5001
 
 # Check if .env file exists
 if [ ! -f .env ]; then
@@ -18,6 +18,5 @@ elif [ -d ".venv" ]; then
     source .venv/bin/activate
 fi
 
-python manage.py runserver 5000
-
- 
+# Run FastAPI with uvicorn
+uvicorn app:app --host 0.0.0.0 --port 5000 --reload

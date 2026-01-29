@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'authentication',
+    'basketball',
 ]
 
 MIDDLEWARE = [
@@ -185,3 +186,6 @@ if not SUPABASE_JWT_SECRET:
         "Please set it in your .env file. "
         "Get it from Supabase Dashboard → Settings → API → JWT Secret"
     )
+
+# KenPom API configuration (optional - only required for KenPom features)
+KENPOM_API_KEY = os.environ.get('KENPOM_API_KEY', '')
